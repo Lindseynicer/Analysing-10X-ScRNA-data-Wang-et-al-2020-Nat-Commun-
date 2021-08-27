@@ -363,36 +363,13 @@ fig <- fig %>% layout(scene = list(xaxis= list(title = "PC_1"),
                                    yaxis= list(title = "PC_2"),
                                    zaxis= list(title = "PC_3")))
 fig 
-fig <- fig %>% add_trace(type = 'scatter3d', data = plot.data,
+## Failed to add lineage
+# <- fig %>% add_trace(type = 'scatter3d', data = plot.data,
                          x = ~slingshot_1, y = ~slingshot_2, y = ~slingshot_3,
                          line = list(color = 'black', width = 1))
 
-fig
-fig_cube <- fig %>% layout(scene = list(xaxis=axx,yaxis=axy,zaxis=axz, aspectmode='cube')) # To maintain cubic aspect
-fig_cube
-rgl::rgl.snapshot('Slingshot.Cluster7.branchs.fittedCurve.png', fmt='png',top=TRUE)
+#fig
 
-Embeddings(object = PG_all, reduction = "pca")
-summary(Embeddings(object = PG_all, reduction = "pca"))
-plot.data <- FetchData(object = PG_all, vars = c("PC_1", "PC_2", "PC_3", "seurat_clusters", "slingshot_1","slingshot_2","slingshot_3"))
-plot.data$label <- paste(rownames(plot.data))
-fig <- plot_ly(data = plot.data, 
-               x = ~PC_1, y = ~PC_2, z = ~PC_3, 
-               color = ~seurat_clusters, 
-               colors = rainbow(10),
-               type = "scatter3d", 
-               mode = "markers", 
-               marker = list(size = 2, width=2), # controls size of points
-               text=~seurat_clusters, #This is that extra column we made earlier for which we will use for cell ID
-               hoverinfo="text") #When you visualize your plotly object, hovering your mouse pointer over a point shows cell names
-
-fig <- fig %>% layout(scene = list(xaxis= list(title = "PC_1"),
-                                   yaxis= list(title = "PC_2"),
-                                   zaxis= list(title = "PC_3")))
-fig 
-fig <- fig %>% add_trace(type = 'scatter3d', data = plot.data,
-                         x = ~slingshot_1, y = ~slingshot_2, y = ~slingshot_3,
-                         line = list(color = 'black', width = 1))
 
 ##########################################################################
 ### Helen's script for the scatter3d plot
