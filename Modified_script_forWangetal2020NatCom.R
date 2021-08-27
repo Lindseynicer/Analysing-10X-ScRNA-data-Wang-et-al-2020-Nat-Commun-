@@ -344,12 +344,6 @@ FeaturePlot(PG_all, c("slingshot_1","slingshot_2","slingshot_3",
 # refer to https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0/blob/master/3D%20UMAP%20Plotting%20v1.3.R
 library(rgl)
 library(plotly)
-pca1 <- PG_all[["pca"]]@cell.embeddings[,1]
-pca2 <- PG_all[["pca"]]@cell.embeddings[,2]
-pca3 <- PG_all[["pca"]]@cell.embeddings[,3]
-line1 <- PG_all$slingshot_1
-line2 <- PG_all$slingshot_2
-line3 <- PG_all$slingshot_3
 
 Embeddings(object = PG_all, reduction = "pca")
 summary(Embeddings(object = PG_all, reduction = "pca"))
@@ -403,7 +397,7 @@ fig <- fig %>% add_trace(type = 'scatter3d', data = plot.data,
 ##########################################################################
 ### Helen's script for the scatter3d plot
 ###########################################################################
-Dims.pca          <- sds@reducedDim         # pca dimension
+Dims.pca          <- sds@reducedDim[,1:3]         # pca dimension
 clusterLabels.pca <- sds@clusterLabels        # cluster labels
 connectivity.pca  <- sds@adjacency         # 
 clusters.pca      <- rownames(connectivity.pca)       #
@@ -413,7 +407,7 @@ centers.pca       <- t(sapply(clusters.pca,function(x){
   return(colMeans(x.sub))
 }))    
 rownames(centers.pca) <- clusters.pca                                              # add row names
-#Dims.pca              <- Dims.pca[ clusterLabels.pca %in% clusters.pca, ]          # 
+Dims.pca              <- Dims.pca[ clusterLabels.pca %in% clusters.pca, ]          # 
 #clusterLabels.pca     <- clusterLabels.pca[clusterLabels.pca %in% clusters.pca]
 #
 sds@lineages
@@ -428,19 +422,21 @@ zs <- c( zs, as.numeric(sapply( sds@curves, function(c){     c$s[, 3 ] }) ))
 rgl::plot3d(x = NULL, y = NULL, z = NULL, aspect = 'iso', 
             xlim = range(xs), ylim = range(ys), zlim = range(zs), 
             box=FALSE, axes=FALSE, xlab = '', ylab = '', zlab = '' )
-colpal = rainbow(10)
-rgl::plot3d(Dims.pca, col=colpal[as.numeric(colnames(clusterLabels.pca))+1], 
-             add=TRUE, type='p', size=4, pch=20,alpha=I(1/20), 
+colpal = rainbow(11)
+rgl::plot3d(Dims.pca, col= rainbow(10)[cl], 
+             add=TRUE, type='p', size=4, pch=20,alpha=I(1/8), 
             box=FALSE, axes=FALSE)
 rgl::abclines3d(max(Dims.pca[,1]),max(Dims.pca[,2]),max(Dims.pca[,3]), 
                 a = diag(3), col = "black", lwd=2)
-rgl::plot3d(centers.pca, size = 10, add = TRUE, pch=20, 
+rgl::plot3d(centers.pca, size = 10, add = TRUE, pch = 17,
             col = colpal[as.numeric(rownames(centers.pca))+1], alpha=1)
 for (i in 1:(nclus.pca-1)){
   for (j in (i+1):nclus.pca){
     if (connectivity.pca[i,j]==1){
       rgl::lines3d(x=centers.pca[c(i,j),1], y=centers.pca[c(i,j),2], 
-                   z=centers.pca[c(i,j),3], col='black', lwd=2)
+                   z=centers.pca[c(i,j),3], 
+                   col=colpal[as.numeric(rownames(connectivity.pca))+1], 
+                   lwd=2)
     }
   }
 }
